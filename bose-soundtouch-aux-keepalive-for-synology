@@ -1,0 +1,14 @@
+#!/bin/bash
+PATH=/opt/bin:/usr/bin/:/opt/bin/bash
+# Script as below
+soundtouch_ip=PUTSOUNDTOUCHIPHERE
+source=$(curl -shttp://$soundtouch_ip:8090/now_playing | xmllint --xpath 'string(/nowPlaying/@source)' -)
+if [ $source = "AUX" ]
+then
+        echo SoundTouch mode is AUX: keep-alive
+        curl -s -o /dev/null --request POST --header "Content-Type: application/xml" --data 'THUMBS_UP'http://$soundtouch_ip:8090/key
+elif [ $source = "STANDBY" ]
+then
+        echo SoundTouch mode is STANDBY: switch to AUX
+        curl -s -o /dev/null --request POST --header "Content-Type: application/xml" --data ''http://$soundtouch_ip:8090/select
+fi
